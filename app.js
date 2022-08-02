@@ -14,6 +14,7 @@ app.use('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    // if everything works fine, the console will show which port the application is listening to
-    console.log(`App listening at port ${PORT}`);
-  })
+  // if everything works fine, the console will show which port the application is listening to
+  // eslint-disable-next-line no-console
+  console.log(`App listening at port ${PORT}`);
+});
