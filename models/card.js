@@ -18,26 +18,26 @@ const cardSchema = new mongoose.Schema({
       },
       message: props => `${props.value} is not a valid URL!`
     },
-    owner: {
+  },
+  owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
       //type: ObjectId,
       required: true,
-    },
-    likes: [{
+      //not_work?  default: '6305d797f22c88d72739a295',
+  },
+  likes: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
       required: true,
       // TODO default value
-      default: null
-    }],
-    createdAt: {
-      type: Date,
-      // TODO default value
-      default: Date.now
-    }
-
-  },
+      default:  []
+  }],
+  createdAt: {
+    type: Date,
+    // TODO default value
+    default: Date.now
+  }
 });
 
 const card = mongoose.model("card", cardSchema);
