@@ -19,11 +19,11 @@ module.exports.deleteCard = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  const owner = '6305d797f22c88d72739a295';
+  // const owner = '6305d797f22c88d72739a295';
   Card.create({
     name,
     link,
-    owner,
+    owner: req.user._id,
     // likes: [owner, owner]
   })
     .then(card => res.send({ data: card }))

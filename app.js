@@ -63,8 +63,17 @@ db_connect.once("open", function () {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: '6305d797f22c88d72739a295' // paste the _id of the test user created in the previous step
+  };
+
+  next();
+});
+
 app.use('/', usersRoutes);
 app.use('/', cardsRoutes);
+
 app.use('/', (req, res) => {
   res.status(404).send({ message: 'Requested resource not found' });
 });
