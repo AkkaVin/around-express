@@ -2,18 +2,27 @@ const Card = require('../models/card');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
-      .populate('owner')
-      // .populate()
-      .then(cards => res.send({ data: cards }))
-      .catch(() => res.status(500)
-        .send({ message: `An error has occurred on the server: ${err.toString()}` }));
+    .orFail(() => {
+      const error = new Error("There is no cards");
+      error.statusCode = 404;
+      throw error;
+    })
+    .populate('owner')
+    .then(cards => res.send({ data: cards }))
+    .catch((err) => res.status(500)
+      .send({ message: `An error has occurred on the server: ${err.toString()}` }));
 };
 
 module.exports.deleteCard = (req, res) => {
   // TODO check if id exist
   Card.findByIdAndDelete(req.params.cardId)
+  .orFail(() => {
+    const error = new Error("No card found with that id");
+    error.statusCode = 404;
+    throw error;
+  })
   .then(card => res.send({ data: card}))
-  .catch(() => res.status(500)
+  .catch((err) => res.status(500)
     .send({ message: `An error has occurred on the server: ${err.toString()}` }));
 };
 
