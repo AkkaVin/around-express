@@ -12,9 +12,8 @@ const cardSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function(v) {
-        //return /\d{3}-\d{3}-\d{4}/.test(v);
-        //TODO
-        return true;
+        const pattern = new RegExp(/(((http(s)?):\/\/)?(www\.)?)?[a-zA-Z0-9@:%_\-\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/, "gi");
+        return pattern.test(v)
       },
       message: props => `${props.value} is not a valid URL!`
     },
