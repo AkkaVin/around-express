@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { URL_REGEXP } = require("../constants");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,12 +19,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: function(v) {
-        // const pattern = new RegExp(/[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\-\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/, "gi");
-        // const pattern = new RegExp(/((http(s)?):\/\/)?(www\.)?[a-zA-Z0-9@:%_\-\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/, "gi");
-        //  ((http(s)?):\/\/)?(www\.)?[a-zA-Z0-9@:%_\-\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)
-        // /(((http(s)?):\/\/)?(www\.)?)?[a-zA-Z0-9@:%_\-\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
-        const pattern = new RegExp(/(((http(s)?):\/\/)?(www\.)?)?[a-zA-Z0-9@:%_\-\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/, "gi");
-        return pattern.test(v)
+        // const pattern = new RegExp(/(((http(s)?):\/\/)?(www\.)?)?[a-zA-Z0-9@:%_\-\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/, "gi");
+        //return pattern.test(v)
+        return URL_REGEXP.test(v)
       },
       message: props => `${props.value} is not a valid URL!`
     },

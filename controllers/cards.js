@@ -5,25 +5,38 @@ module.exports.getCards = (req, res) => {
     .orFail(() => {
       const error = new Error("There is no cards");
       error.statusCode = 404;
+      error.name = "CardsNotFound";
       throw error;
     })
     .populate('owner')
     .then(cards => res.send({ data: cards }))
-    .catch((err) => res.status(500)
-      .send({ message: `An error has occurred on the server: ${err.toString()}` }));
+    .catch((err) => {
+      if (err.name === 'CardsNotFound') {
+        res.status(err.statusCode).send(err.message)
+      } else
+        res.status(500).send({
+          message: `An error has occurred on the server: ${err.toString()}`
+        })
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
-  // TODO check if id exist
   Card.findByIdAndDelete(req.params.cardId)
   .orFail(() => {
     const error = new Error("No card found with that id");
     error.statusCode = 404;
+    error.name = "CardNotFound";
     throw error;
   })
   .then(card => res.send({ data: card}))
-  .catch((err) => res.status(500)
-    .send({ message: `An error has occurred on the server: ${err.toString()}` }));
+  .catch((err) => {
+    if (err.name === 'CardNotFound') {
+      res.status(err.statusCode).send(err.message)
+    } else
+      res.status(500).send({
+        message: `An error has occurred on the server: ${err.toString()}`
+      })
+  });
 };
 
 module.exports.createCard = (req, res) => {
@@ -36,8 +49,14 @@ module.exports.createCard = (req, res) => {
     // likes: [owner, owner]
   })
     .then(card => res.send({ data: card }))
-    .catch(() => res.status(500)
-    .send({ message: `An error has occurred on the server: ${err.toString()}` }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send(err.message)
+      } else
+        res.status(500).send({
+          message: `An error has occurred on the server: ${err.toString()}`
+        })
+    });
 };
 
 module.exports.likeCard = (req, res) => {
@@ -49,11 +68,21 @@ module.exports.likeCard = (req, res) => {
   .orFail(() => {
     const error = new Error("No card found with that id");
     error.statusCode = 404;
+    error.name = "CardNotFound";
     throw error;
   })
   .then(card => res.send({ data: card}))
-  .catch((err) => res.status(500)
-    .send({ message: `An error has occurred on the server: ${err.toString()}` }));
+  .catch((err) => {
+    if (err.name === 'ValidationError') {
+      res.status(400).send(err.message)
+    }
+    if (err.name === 'CardNotFound') {
+      res.status(err.statusCode).send(err.message)
+    } else
+      res.status(500).send({
+        message: `An error has occurred on the server: ${err.toString()}`
+      })
+  });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -64,9 +93,19 @@ module.exports.dislikeCard = (req, res) => {
   .orFail(() => {
     const error = new Error("No card found with that id");
     error.statusCode = 404;
+    error.name = "CardNotFound";
     throw error;
   })
   .then(card => res.send({ data: card}))
-  .catch((err) => res.status(500)
-    .send({ message: `An error has occurred on the server: ${err.toString()}` }));
+  .catch((err) => {
+    if (err.name === 'ValidationError') {
+      res.status(400).send(err.message)
+    }
+    if (err.name === 'CardNotFound') {
+      res.status(err.statusCode).send(err.message)
+    } else
+      res.status(500).send({
+        message: `An error has occurred on the server: ${err.toString()}`
+      })
+  });
 }
