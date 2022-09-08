@@ -5,6 +5,8 @@ const {
   INTERNAL_SERVER_ERROR_CODE,
 } = require("../constants");
 
+// get card(s) ======================================================================
+
 module.exports.getCards = (req, res) => {
   Card.find({})
     .orFail(() => {
@@ -25,6 +27,8 @@ module.exports.getCards = (req, res) => {
     });
 };
 
+// delete card ======================================================================
+
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndDelete(req.params.cardId)
     .orFail(() => {
@@ -43,6 +47,8 @@ module.exports.deleteCard = (req, res) => {
         });
     });
 };
+
+// create card ======================================================================
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
@@ -64,11 +70,15 @@ module.exports.createCard = (req, res) => {
     });
 };
 
+// update card ======================================================================
+
+const updateOptions = { runValidators: true, new: true };
+
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
-    { new: true }
+    updateOptions
   )
     .orFail(() => {
       const error = new Error("No card found with that id");
@@ -94,7 +104,7 @@ module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
-    { new: true }
+    updateOptions
   )
     .orFail(() => {
       const error = new Error("No card found with that id");

@@ -62,9 +62,11 @@ module.exports.createUser = (req, res) => {
 
 // update user ======================================================================
 
+const updateOptions = { runValidators: true, new: true };
+
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name: name, about: about })
+  User.findByIdAndUpdate(req.user._id, { name: name, about: about }, updateOptions)
     .orFail(() => {
       const error = new Error("No user found with that id");
       error.statusCode = NOT_FOUND_CODE;
@@ -87,7 +89,7 @@ module.exports.updateProfile = (req, res) => {
 
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar: avatar })
+  User.findByIdAndUpdate(req.user._id, { avatar: avatar }, updateOptions)
     .orFail(() => {
       const error = new Error("No user found with that id");
       error.statusCode = NOT_FOUND_CODE;
