@@ -5,21 +5,15 @@ const {
   INTERNAL_SERVER_ERROR_CODE,
 } = require("../constants");
 
+const mongoose = require('mongoose');
+
+
 // get user(s) ======================================================================
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .orFail(() => {
-      const error = new Error("There is no users");
-      error.statusCode = NOT_FOUND_CODE;
-      error.name = "UsersNotFound";
-      throw error;
-    })
     .then((users) => res.status(200).send({ data: users }))
-    .catch((err) => {
-      if (err.name === "UsersNotFound") {
-        res.status(err.statusCode).send(err.message);
-      } else
+    .catch( err => {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: `An error has occurred on the server: ${err.toString()}`,
         });
@@ -37,6 +31,9 @@ module.exports.getUser = (req, res) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(INVALID_DATA_CODE).send(err.message);
+      }
       if (err.name === "UserNotFound") {
         res.status(err.statusCode).send(err.message);
       } else
@@ -52,7 +49,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(400).send(err.message);
+        res.status(INVALID_DATA_CODE).send(err.message);
       } else
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: `An error has occurred on the server: ${err.toString()}`,
@@ -99,7 +96,7 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(400).send(err.message);
+        res.status(INVALID_DATA_CODE).send(err.message);
       }
       if (err.name === "UserNotFound") {
         res.status(err.statusCode).send(err.message);
