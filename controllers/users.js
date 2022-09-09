@@ -22,26 +22,35 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   // TODO check if id exist
-  User.findById(req.params.id)
-    .orFail(() => {
-      const error = new Error("No user found with that id");
-      error.statusCode = NOT_FOUND_CODE;
-      error.name = "UserNotFound";
-      throw error;
-    })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(INVALID_DATA_CODE).send(err.message);
-      }
-      if (err.name === "UserNotFound") {
-        res.status(err.statusCode).send(err.message);
-      } else
-        res.status(INTERNAL_SERVER_ERROR_CODE).send({
-          message: `An error has occurred on the server: ${err.toString()}`,
-        });
-    });
+  if (mongoose.isValidObjectId(req.params.id))
+    User.findById(req.params.id)
+      .orFail(() => {
+        const error = new Error("No user found with that id");
+        error.statusCode = NOT_FOUND_CODE;
+        error.name = "UserNotFound";
+        throw error;
+      })
+      .then((user) => res.send({ data: user }))
+      .catch((err) => {
+        // if (err.name === 'CastError') {
+        //   res.status(INVALID_DATA_CODE).send(err.message);
+        // }
+        if (err.name === "UserNotFound") {
+          res.status(err.statusCode).send(err.message);
+        } else
+          res.status(INTERNAL_SERVER_ERROR_CODE).send({
+            message: `An error has occurred on the server: ${err.toString()}`,
+          });
+      });
+  else {
+    const invalidDataError = new Error("Invalid id");
+    invalidDataError.statusCode = INVALID_DATA_CODE;
+    invalidDataError.name = "InvalidData";
+    res.status(invalidDataError.statusCode).send(invalidDataError.message);
+    throw invalidDataError;
+  }
 };
+
 // create user ======================================================================
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;

@@ -1,4 +1,5 @@
 const express = require('express');
+const process = require('process');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
@@ -25,7 +26,6 @@ app.use((req, res, next) => {
   req.user = {
     _id: '6305d797f22c88d72739a295'
   };
-
   next();
 });
 
@@ -35,6 +35,11 @@ app.use('/', cardsRoutes);
 app.use('/', (req, res) => {
   res.status(404).send({ message: 'Requested resource not found' });
 });
+
+process.on('uncaughtException', (err, origin) => {
+  console.log(`${origin} ${err.name} with the message ${err.message} was not handled. Pay attention to it!`);
+});
+
 
 app.listen(PORT, () => {
   // if everything works fine, the console will show which port the application is listening to
