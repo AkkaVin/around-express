@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { URL_REGEXP } = require("../constants");
+const mongoose = require('mongoose');
+const { URL_REGEXP } = require('../constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +12,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: function (v) {
+      validator(v) {
         return URL_REGEXP.test(v);
       },
       message: (props) => `${props.value} is not a valid URL!`,
@@ -20,27 +20,24 @@ const cardSchema = new mongoose.Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    //type: ObjectId,
+    ref: 'user',
     required: true,
-    //not_work?  default: '6305d797f22c88d72739a295',
+    // default: '6305d797f22c88d72739a295',
   },
   likes: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: 'user',
       required: true,
-      // TODO default value
       default: [],
     },
   ],
   createdAt: {
     type: Date,
-    // TODO default value
     default: Date.now,
   },
 });
 
-const card = mongoose.model("card", cardSchema);
+const card = mongoose.model('card', cardSchema);
 
 module.exports = card;

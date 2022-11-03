@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { URL_REGEXP } = require("../constants");
+const mongoose = require('mongoose');
+const { URL_REGEXP } = require('../constants');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: function (v) {
+      validator(v) {
         return URL_REGEXP.test(v);
       },
       message: (props) => `${props.value} is not a valid URL!`,
@@ -26,6 +26,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const user = mongoose.model("user", userSchema);
+const user = mongoose.model('user', userSchema);
 
 module.exports = user;

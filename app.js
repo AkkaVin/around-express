@@ -2,8 +2,7 @@ const express = require('express');
 const process = require('process');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
-
+const helmet = require('helmet');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -12,19 +11,20 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 mongoose.connect('mongodb://localhost:27017/aroundb');
-const db_connect = mongoose.connection;
+const dbConnect = mongoose.connection;
 
-db_connect.on("error", console.error.bind(console, "connection error: "));
-db_connect.once("open", function () {
-  console.log("Connected successfully");
+dbConnect.on('error', console.error.bind(console, 'connection error: '));
+dbConnect.once('open', () => {
+  console.log('Connected successfully');
 });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(helmet());
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6305d797f22c88d72739a295'
+    _id: '6305d797f22c88d72739a295',
   };
   next();
 });
@@ -39,7 +39,6 @@ app.use('/', (req, res) => {
 process.on('uncaughtException', (err, origin) => {
   console.log(`${origin} ${err.name} with the message ${err.message} was not handled. Pay attention to it!`);
 });
-
 
 app.listen(PORT, () => {
   // if everything works fine, the console will show which port the application is listening to
