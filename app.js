@@ -37,6 +37,7 @@ app.use('/', (req, res) => {
 });
 
 process.on('uncaughtException', (err, origin) => {
+  // eslint-disable-next-line no-console
   console.log(`${origin} ${err.name} with the message ${err.message} was not handled. Pay attention to it!`);
 });
 
