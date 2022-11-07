@@ -3,6 +3,11 @@ const process = require('process');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const {
+  NOT_FOUND_CODE,
+  LIMITER_CONFIG,
+} = require('./constants');
 const usersRoutes = require('./routes/users');
 const cardsRoutes = require('./routes/cards');
 
@@ -13,11 +18,16 @@ const app = express();
 mongoose.connect('mongodb://localhost:27017/aroundb');
 const dbConnect = mongoose.connection;
 
+// eslint-disable-next-line no-console
 dbConnect.on('error', console.error.bind(console, 'connection error: '));
 dbConnect.once('open', () => {
+  // eslint-disable-next-line no-console
   console.log('Connected successfully');
 });
 
+const limiter = rateLimit(LIMITER_CONFIG);
+
+app.use(limiter);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(helmet());
@@ -33,7 +43,7 @@ app.use('/', usersRoutes);
 app.use('/', cardsRoutes);
 
 app.use('/', (req, res) => {
-  res.status(404).send({ message: 'Requested resource not found' });
+  res.status(NOT_FOUND_CODE).send({ message: 'Requested resource not found' });
 });
 
 process.on('uncaughtException', (err, origin) => {
