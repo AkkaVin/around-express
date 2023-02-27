@@ -19,7 +19,9 @@ module.exports.getCards = (req, res) => {
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
       if (err.name === 'CardsNotFound') {
-        res.status(err.statusCode).send(err.message);
+        res.status(err.statusCode).send({
+          message: err.message,
+        });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: `An error has occurred on the server: ${err.toString()}`,
@@ -41,7 +43,9 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CardNotFound') {
-        res.status(err.statusCode).send(err.message);
+        res.status(err.statusCode).send({
+          message: err.message,
+        });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: `An error has occurred on the server: ${err.toString()}`,
@@ -64,7 +68,9 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(INVALID_DATA_CODE).send(err.message);
+        res.status(INVALID_DATA_CODE).send({
+          message: err.message,
+        });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: `An error has occurred on the server: ${err.toString()}`,
@@ -92,10 +98,14 @@ module.exports.likeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(INVALID_DATA_CODE).send(err.message);
+        res.status(INVALID_DATA_CODE).send({
+          message: err.message,
+        });
       }
       if (err.name === 'CardNotFound') {
-        res.status(err.statusCode).send(err.message);
+        res.status(err.statusCode).send({
+          message: err.message,
+        });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: `An error has occurred on the server: ${err.toString()}`,
@@ -119,10 +129,14 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(INVALID_DATA_CODE).send(err.message);
+        res.status(INVALID_DATA_CODE).send({
+          message: err.message,
+        });
       }
       if (err.name === 'CardNotFound') {
-        res.status(err.statusCode).send(err.message);
+        res.status(err.statusCode).send({
+          message: err.message,
+        });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
           message: `An error has occurred on the server: ${err.toString()}`,
