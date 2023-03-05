@@ -16,13 +16,14 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    required: true,
+    // required: true,
     validate: {
       validator(v) {
         return URL_REGEXP.test(v);
       },
       message: (props) => `${props.value} is not a valid URL!`,
     },
+    default: 'https://c.tenor.com/10Zdx_RXqgcAAAAM/programming-crazy.gif',
   },
 });
 

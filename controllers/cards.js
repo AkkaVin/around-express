@@ -1,8 +1,11 @@
 const Card = require('../models/card');
+const AppError = require('../errors/application-error');
 const {
   NOT_FOUND_CODE,
+  NOT_FOUND_MESSAGE,
   INVALID_DATA_CODE,
   INTERNAL_SERVER_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_MESSAGE,
 } = require('../constants');
 
 // get card(s) ======================================================================
@@ -10,10 +13,7 @@ const {
 module.exports.getCards = (req, res) => {
   Card.find({})
     .orFail(() => {
-      const error = new Error('There is no cards');
-      error.statusCode = NOT_FOUND_CODE;
-      error.name = 'CardsNotFound';
-      throw error;
+      throw new AppError(NOT_FOUND_CODE, `${NOT_FOUND_MESSAGE} cards`, 'CardsNotFound');
     })
     .populate('owner')
     .then((cards) => res.send({ data: cards }))
@@ -24,7 +24,7 @@ module.exports.getCards = (req, res) => {
         });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
-          message: `An error has occurred on the server: ${err.toString()}`,
+          message: `${INTERNAL_SERVER_ERROR_MESSAGE}${err.toString()}`,
         });
       }
     });
@@ -35,10 +35,7 @@ module.exports.getCards = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndDelete(req.params.cardId)
     .orFail(() => {
-      const error = new Error('No card found with that id');
-      error.statusCode = NOT_FOUND_CODE;
-      error.name = 'CardNotFound';
-      throw error;
+      throw new AppError(NOT_FOUND_CODE, `${NOT_FOUND_MESSAGE} card with id = ${req.params.cardId}`, 'CardNotFound');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -48,7 +45,7 @@ module.exports.deleteCard = (req, res) => {
         });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
-          message: `An error has occurred on the server: ${err.toString()}`,
+          message: `${INTERNAL_SERVER_ERROR_MESSAGE}${err.toString()}`,
         });
       }
     });
@@ -63,7 +60,6 @@ module.exports.createCard = (req, res) => {
     name,
     link,
     owner: req.user._id,
-    // likes: [owner, owner]
   })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
@@ -73,7 +69,7 @@ module.exports.createCard = (req, res) => {
         });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
-          message: `An error has occurred on the server: ${err.toString()}`,
+          message: `${INTERNAL_SERVER_ERROR_MESSAGE}${err.toString()}`,
         });
       }
     });
@@ -90,25 +86,22 @@ module.exports.likeCard = (req, res) => {
     updateOptions,
   )
     .orFail(() => {
-      const error = new Error('No card found with that id');
-      error.statusCode = NOT_FOUND_CODE;
-      error.name = 'CardNotFound';
-      throw error;
+      throw new AppError(NOT_FOUND_CODE, `${NOT_FOUND_MESSAGE} card with id = ${req.params.cardId}`, 'CardNotFound');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(INVALID_DATA_CODE).send({
           message: err.message,
         });
-      }
+      } else
       if (err.name === 'CardNotFound') {
         res.status(err.statusCode).send({
           message: err.message,
         });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
-          message: `An error has occurred on the server: ${err.toString()}`,
+          message: `${INTERNAL_SERVER_ERROR_MESSAGE}${err.toString()}`,
         });
       }
     });
@@ -121,25 +114,22 @@ module.exports.dislikeCard = (req, res) => {
     updateOptions,
   )
     .orFail(() => {
-      const error = new Error('No card found with that id');
-      error.statusCode = NOT_FOUND_CODE;
-      error.name = 'CardNotFound';
-      throw error;
+      throw new AppError(NOT_FOUND_CODE, `${NOT_FOUND_MESSAGE} card with id = ${req.params.cardId}`, 'CardNotFound');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(INVALID_DATA_CODE).send({
           message: err.message,
         });
-      }
+      } else
       if (err.name === 'CardNotFound') {
         res.status(err.statusCode).send({
           message: err.message,
         });
       } else {
         res.status(INTERNAL_SERVER_ERROR_CODE).send({
-          message: `An error has occurred on the server: ${err.toString()}`,
+          message: `${INTERNAL_SERVER_ERROR_MESSAGE}${err.toString()}`,
         });
       }
     });

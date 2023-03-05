@@ -8,14 +8,17 @@ const {
   NOT_FOUND_CODE,
   LIMITER_CONFIG,
 } = require('./constants');
-const usersRoutes = require('./routes/users');
-const cardsRoutes = require('./routes/cards');
+const {
+  SERVER_ADDRESS,
+} = require('./mongo-server-conf');
+
+const mainRoutes = require('./routes/index');
 
 const { PORT = 3000 } = process.env;
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/aroundb');
+mongoose.connect(SERVER_ADDRESS);
 const dbConnect = mongoose.connection;
 
 // eslint-disable-next-line no-console
@@ -39,14 +42,17 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', usersRoutes);
-app.use('/', cardsRoutes);
+app.use(mainRoutes);
 
 app.use('/', (req, res) => {
   res.status(NOT_FOUND_CODE).send({ message: 'Requested resource not found' });
 });
 
 process.on('uncaughtException', (err, origin) => {
+  // eslint-disable-next-line no-console
+  // console.log(origin);
+  // eslint-disable-next-line no-console
+  // console.log(err);
   // eslint-disable-next-line no-console
   console.log(`${origin} ${err.name} with the message ${err.message} was not handled. Pay attention to it!`);
 });
