@@ -39,6 +39,11 @@ module.exports.deleteCard = (req, res) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(INVALID_DATA_CODE).send({
+          message: err.message,
+        });
+      } else
       if (err.name === 'CardNotFound') {
         res.status(err.statusCode).send({
           message: err.message,
